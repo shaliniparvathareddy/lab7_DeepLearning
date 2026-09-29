@@ -9,9 +9,7 @@ Original file is located at
 
 !pip install -q tensorflow scikit-image pandas matplotlib seaborn
 
-# ============================================================
-# CELL 2: IMPORT LIBRARIES
-# ============================================================
+
 
 import os
 import time
@@ -41,18 +39,14 @@ random.seed(SEED)
 sns.set_style("whitegrid")
 plt.rcParams["figure.figsize"] = (10, 6)
 
-# ============================================================
-# CELL 3: LOAD MNIST
-# ============================================================
+
 
 (x_train_full, y_train_full), (x_test_full, y_test_full) = keras.datasets.mnist.load_data()
 
 print("Original training data:", x_train_full.shape)
 print("Original test data:", x_test_full.shape)
 
-# ============================================================
-# CELL 4: NORMALIZE DATA
-# ============================================================
+
 
 x_train_full = x_train_full.astype("float32") / 255.0
 x_test_full = x_test_full.astype("float32") / 255.0
@@ -64,9 +58,7 @@ x_test_full = np.expand_dims(x_test_full, axis=-1)
 print("Training shape:", x_train_full.shape)
 print("Test shape:", x_test_full.shape)
 
-# ============================================================
-# CELL 5: SELECT LABORATORY SUBSET
-# ============================================================
+
 
 N_TRAIN = 10000
 N_TEST = 2000
@@ -80,9 +72,6 @@ y_test = y_test_full[:N_TEST]
 print("Training images:", x_train.shape)
 print("Test images:", x_test.shape)
 
-# ============================================================
-# CELL 6: DISPLAY SAMPLE IMAGES
-# ============================================================
 
 plt.figure(figsize=(12, 6))
 
@@ -96,9 +85,6 @@ plt.suptitle("Sample MNIST Images")
 plt.tight_layout()
 plt.show()
 
-# ============================================================
-# CELL 7: EVALUATION FUNCTIONS
-# ============================================================
 
 def calculate_metrics(original, reconstructed):
     """
@@ -146,19 +132,13 @@ def per_image_mse(original, reconstructed):
 
     return errors
 
-# ============================================================
-# CELL 8: PREPARE DATA FOR FULLY CONNECTED AE
-# ============================================================
-
 x_train_flat = x_train.reshape(len(x_train), 784)
 x_test_flat = x_test.reshape(len(x_test), 784)
 
 print("Flattened training shape:", x_train_flat.shape)
 print("Flattened test shape:", x_test_flat.shape)
 
-# ============================================================
-# CELL 9: FULLY CONNECTED AUTOENCODER
-# ============================================================
+
 
 def build_fc_autoencoder(latent_dim=16):
 
@@ -199,9 +179,7 @@ def build_fc_autoencoder(latent_dim=16):
 
     return autoencoder, encoder
 
-# ============================================================
-# CELL 10: TRAIN FC AUTOENCODER
-# ============================================================
+
 
 fc_ae, fc_encoder = build_fc_autoencoder(latent_dim=16)
 
@@ -212,9 +190,6 @@ fc_ae.compile(
 
 fc_ae.summary()
 
-# ============================================================
-# CELL 11: TRAINING
-# ============================================================
 
 start_time = time.time()
 
@@ -231,9 +206,6 @@ fc_time = time.time() - start_time
 
 print("FC Autoencoder training time:", fc_time, "seconds")
 
-# ============================================================
-# CELL 12: PLOT FC TRAINING/VALIDATION LOSS
-# ============================================================
 
 plt.figure(figsize=(10, 6))
 
@@ -253,9 +225,7 @@ plt.title("FC Autoencoder Training and Validation Loss")
 plt.legend()
 plt.show()
 
-# ============================================================
-# CELL 13: FC RECONSTRUCTION
-# ============================================================
+
 
 fc_reconstructed_flat = fc_ae.predict(
     x_test_flat,
@@ -268,9 +238,6 @@ fc_reconstructed = fc_reconstructed_flat.reshape(
 
 print("Reconstructed shape:", fc_reconstructed.shape)
 
-# ============================================================
-# CELL 14: ORIGINAL VS FC RECONSTRUCTION
-# ============================================================
 
 plt.figure(figsize=(15, 6))
 
@@ -292,9 +259,7 @@ plt.suptitle("Fully Connected Autoencoder")
 plt.tight_layout()
 plt.show()
 
-# ============================================================
-# CELL 15: FC METRICS
-# ============================================================
+
 
 fc_mse, fc_mae, fc_ssim = calculate_metrics(
     x_test,
@@ -307,9 +272,7 @@ print("MSE :", fc_mse)
 print("MAE :", fc_mae)
 print("SSIM:", fc_ssim)
 
-# ============================================================
-# CELL 16: EXTRACT FC LATENT REPRESENTATIONS
-# ============================================================
+
 
 fc_latent = fc_encoder.predict(
     x_test_flat,
@@ -318,9 +281,7 @@ fc_latent = fc_encoder.predict(
 
 print("Latent representation shape:", fc_latent.shape)
 
-# ============================================================
-# CELL 17: FC LATENT SPACE VISUALIZATION
-# ============================================================
+
 
 plt.figure(figsize=(10, 8))
 
@@ -339,9 +300,7 @@ plt.ylabel("Latent Dimension 2")
 plt.title("FC Autoencoder Latent Representation")
 plt.show()
 
-# ============================================================
-# CELL 18: CONVOLUTIONAL AUTOENCODER
-# ============================================================
+
 
 def build_conv_autoencoder():
 
@@ -423,9 +382,7 @@ def build_conv_autoencoder():
 
     return autoencoder, encoder
 
-# ============================================================
-# CELL 19: TRAIN CONVOLUTIONAL AUTOENCODER
-# ============================================================
+
 
 conv_ae, conv_encoder = build_conv_autoencoder()
 
@@ -438,9 +395,7 @@ conv_ae.compile(
 
 conv_ae.summary()
 
-# ============================================================
-# CELL 20: TRAIN CAE
-# ============================================================
+
 
 start_time = time.time()
 
@@ -457,9 +412,7 @@ conv_time = time.time() - start_time
 
 print("Convolutional AE training time:", conv_time)
 
-# ============================================================
-# CELL 21: CAE LOSS
-# ============================================================
+
 
 plt.figure(figsize=(10, 6))
 
@@ -479,9 +432,7 @@ plt.title("Convolutional Autoencoder Loss")
 plt.legend()
 plt.show()
 
-# ============================================================
-# CELL 22: CAE RECONSTRUCTION
-# ============================================================
+
 
 conv_reconstructed = conv_ae.predict(
     x_test,
@@ -490,9 +441,6 @@ conv_reconstructed = conv_ae.predict(
 
 print(conv_reconstructed.shape)
 
-# ============================================================
-# CELL 23: CAE METRICS
-# ============================================================
 
 conv_mse, conv_mae, conv_ssim = calculate_metrics(
     x_test,
@@ -505,9 +453,7 @@ print("MSE :", conv_mse)
 print("MAE :", conv_mae)
 print("SSIM:", conv_ssim)
 
-# ============================================================
-# CELL 24: FC VS CAE RECONSTRUCTION
-# ============================================================
+
 
 plt.figure(figsize=(15, 9))
 
@@ -535,9 +481,7 @@ plt.suptitle("FC Autoencoder vs Convolutional Autoencoder")
 plt.tight_layout()
 plt.show()
 
-# ============================================================
-# CELL 25: MODEL COMPARISON TABLE
-# ============================================================
+
 
 fc_params = fc_ae.count_params()
 conv_params = conv_ae.count_params()
@@ -571,10 +515,6 @@ comparison = pd.DataFrame({
 
 comparison
 
-# ============================================================
-# CELL 26: GAUSSIAN NOISE FUNCTION
-# ============================================================
-
 def add_gaussian_noise(images, sigma):
 
     noise = np.random.normal(
@@ -593,9 +533,7 @@ def add_gaussian_noise(images, sigma):
 
     return noisy_images.astype("float32")
 
-# ============================================================
-# CELL 27: SHOW GAUSSIAN NOISE
-# ============================================================
+
 
 sigmas = [0.1, 0.2, 0.3]
 
@@ -623,9 +561,7 @@ for row, sigma in enumerate(sigmas):
 plt.tight_layout()
 plt.show()
 
-# ============================================================
-# CELL 28: SALT AND PEPPER NOISE
-# ============================================================
+
 
 def add_salt_pepper_noise(images, probability):
 
@@ -644,9 +580,7 @@ def add_salt_pepper_noise(images, probability):
 
     return noisy.astype("float32")
 
-# ============================================================
-# CELL 29: SHOW SALT-AND-PEPPER NOISE
-# ============================================================
+
 
 probabilities = [0.05, 0.10, 0.20]
 
@@ -674,9 +608,6 @@ for row, p in enumerate(probabilities):
 plt.tight_layout()
 plt.show()
 
-# ============================================================
-# CELL 30: DENOISING CAE
-# ============================================================
 
 denoising_ae, denoising_encoder = build_conv_autoencoder()
 
@@ -689,9 +620,6 @@ denoising_ae.compile(
 
 denoising_ae.summary()
 
-# ============================================================
-# CELL 31: CREATE DENOISING TRAINING DATA
-# ============================================================
 
 NOISE_SIGMA = 0.2
 
@@ -707,9 +635,6 @@ x_test_noisy = add_gaussian_noise(
 
 print(x_train_noisy.shape)
 
-# ============================================================
-# CELL 32: TRAIN DENOISING AUTOENCODER
-# ============================================================
 
 start_time = time.time()
 
@@ -729,9 +654,6 @@ print(
     denoising_time
 )
 
-# ============================================================
-# CELL 33: DENOISING LOSS
-# ============================================================
 
 plt.figure(figsize=(10, 6))
 
@@ -751,18 +673,12 @@ plt.title("Denoising Autoencoder Loss")
 plt.legend()
 plt.show()
 
-# ============================================================
-# CELL 34: DENOISING RECONSTRUCTION
-# ============================================================
 
 denoised_images = denoising_ae.predict(
     x_test_noisy,
     verbose=0
 )
 
-# ============================================================
-# CELL 35: CLEAN VS NOISY VS DENOISED
-# ============================================================
 
 plt.figure(figsize=(15, 9))
 
@@ -799,9 +715,6 @@ plt.suptitle("Denoising Autoencoder")
 plt.tight_layout()
 plt.show()
 
-# ============================================================
-# CELL 36: DENOISING METRICS
-# ============================================================
 
 denoise_mse, denoise_mae, denoise_ssim = calculate_metrics(
     x_test,
@@ -814,9 +727,7 @@ print("MSE :", denoise_mse)
 print("MAE :", denoise_mae)
 print("SSIM:", denoise_ssim)
 
-# ============================================================
-# CELL 37: GAUSSIAN NOISE LEVEL EXPERIMENT
-# ============================================================
+
 
 noise_results = []
 
@@ -848,9 +759,6 @@ noise_df = pd.DataFrame(noise_results)
 
 noise_df
 
-# ============================================================
-# CELL 38: NOISE LEVEL VS MSE
-# ============================================================
 
 plt.figure(figsize=(8, 5))
 
@@ -865,9 +773,7 @@ plt.ylabel("MSE")
 plt.title("Noise Level vs MSE")
 plt.show()
 
-# ============================================================
-# CELL 39: NOISE LEVEL VS MAE
-# ============================================================
+
 
 plt.figure(figsize=(8, 5))
 
@@ -883,10 +789,6 @@ plt.ylabel("MAE")
 plt.title("Noise Level vs MAE")
 plt.show()
 
-# ============================================================
-# CELL 40: NOISE LEVEL VS SSIM
-# ============================================================
-
 plt.figure(figsize=(8, 5))
 
 plt.plot(
@@ -901,9 +803,7 @@ plt.ylabel("SSIM")
 plt.title("Noise Level vs SSIM")
 plt.show()
 
-# ============================================================
-# CELL 41: SALT-AND-PEPPER EVALUATION
-# ============================================================
+
 
 sp_results = []
 
